@@ -1,0 +1,44 @@
+{
+  "localhost": {
+    "expectedDeployer": "0x7f4bBD9AaD71AfB0B31f44ACe5ADfEb8A7970A16",
+    "toll": 2,
+    "tollCollector": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23", 
+    "tollReceiver": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "expectedRegistryNonce": 5
+  },
+  "rinkarby": {
+    "expectedDeployer": "0x7f4bBD9AaD71AfB0B31f44ACe5ADfEb8A7970A16",
+    "toll": "30000000000000",
+    "tollCollector": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "tollReceiver": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "expectedRegistryNonce": 5
+  },
+  "arbitrum": {
+    "expectedDeployer": "0x7f4bBD9AaD71AfB0B31f44ACe5ADfEb8A7970A16",
+    "toll": "30000000000000",
+    "tollCollector": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "tollReceiver": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "expectedRegistryNonce": 5
+  },
+  "optimistic_kovan": {
+    "expectedDeployer": "0x7f4bBD9AaD71AfB0B31f44ACe5ADfEb8A7970A16",
+    "toll": "30000000000000",
+    "tollCollector": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "tollReceiver": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "expectedRegistryNonce": 5
+  },
+  "optimism": {
+    "expectedDeployer": "0x7f4bBD9AaD71AfB0B31f44ACe5ADfEb8A7970A16",
+    "toll": "30000000000000",
+    "tollCollector": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "tollReceiver": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "expectedRegistryNonce": 5
+  },
+  "goerli": {
+    "expectedDeployer": "0x7f4bBD9AaD71AfB0B31f44ACe5ADfEb8A7970A16",
+    "toll": "30000000000000",
+    "tollCollector": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "tollReceiver": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "expectedRegistryNonce": 5
+  }
+}
