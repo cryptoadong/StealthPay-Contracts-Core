@@ -3,9 +3,9 @@ pragma solidity ^0.7.6;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "./IUmbraHookReceiver.sol";
+import "./ISPaymentHookReceiver.sol";
 
-contract Umbra is Ownable {
+contract SPayment is Ownable {
   // =========================================== Events ============================================
 
   /// @notice Emitted when a payment is sent
@@ -87,7 +87,7 @@ contract Umbra is Ownable {
    * @notice Function only the toll collector can call to sweep funds to the toll receiver
    */
   function collectTolls() external {
-    require(msg.sender == tollCollector, "Umbra: Not toll collector");
+    require(msg.sender == tollCollector, "SPayment: Not toll collector");
     tollReceiver.transfer(address(this).balance);
   }
 
@@ -98,7 +98,7 @@ contract Umbra is Ownable {
    * @param _receiver Stealth address receiving the payment
    * @param _tollCommitment Exact toll the sender is paying; should equal contract toll;
    * the committment is used to prevent frontrunning attacks by the owner;
-   * see https://github.com/ScopeLift/umbra-protocol/issues/54 for more information
+   * see https://github.com/ScopeLift/spayment-protocol/issues/54 for more information
    * @param _pkx X-coordinate of the ephemeral public key used to encrypt the payload
    * @param _ciphertext Encrypted entropy (used to generated the stealth address) and payload extension
    */
@@ -108,20 +108,16 @@ contract Umbra is Ownable {
     bytes32 _pkx, // ephemeral public key x coordinate
     bytes32 _ciphertext
   ) external payable {
-    require(_tollCommitment == toll, "Umbra: Invalid or outdated toll commitment");
+    require(_tollCommitment == toll, "SPayment: Invalid or outdated toll commitment");
 
     // also protects from underflow
-    require(msg.value > toll, "Umbra: Must pay more than the toll");
-
-    //stealthKeyPair.address: 0xd00b79dd10f0167DA4ba3750E938627ee4974282
-    //pubKeyXCoordinate: 0x795c9cf6983f23cd1a941b381b6fa5d19031e75d73fc0cfc86c77070671bb853
-    //encrypted.ciphertext 0x65c2e30c8924e6b74d31b66283771cc0ef9a180af2b1cfa7770ea140d006d2dc
+    require(msg.value > toll, "SPayment: Must pay more than the toll");
 
     uint256 amount = msg.value - toll;
 
     //Announcement
     emit Announcement(_receiver, amount, ETH_TOKEN_PLACHOLDER, _pkx, _ciphertext);
-    //转账
+    
     _receiver.transfer(amount);
   }
 
@@ -140,8 +136,8 @@ contract Umbra is Ownable {
     bytes32 _pkx, // ephemeral public key x coordinate
     bytes32 _ciphertext
   ) external payable {
-    require(msg.value == toll, "Umbra: Must pay the exact toll");
-    require(tokenPayments[_receiver][_tokenAddr] == 0, "Umbra: Cannot send more tokens to stealth address");
+    require(msg.value == toll, "SPayment: Must pay the exact toll");
+    require(tokenPayments[_receiver][_tokenAddr] == 0, "SPayment: Cannot send more tokens to stealth address");
 
     tokenPayments[_receiver][_tokenAddr] = _amount;
 
@@ -160,7 +156,7 @@ contract Umbra is Ownable {
    * @param _tokenAddr Address of the ERC20 token being withdrawn
    */
   function withdrawToken(address _acceptor, address _tokenAddr) external {
-    _withdrawTokenInternal(msg.sender, _acceptor, _tokenAddr, address(0), 0, IUmbraHookReceiver(0), "");
+    _withdrawTokenInternal(msg.sender, _acceptor, _tokenAddr, address(0), 0, ISPaymentHookReceiver(0), "");
   }
 
   /**
@@ -174,7 +170,7 @@ contract Umbra is Ownable {
   function withdrawTokenAndCall(
     address _acceptor,
     address _tokenAddr,
-    IUmbraHookReceiver _hook,
+    ISPaymentHookReceiver _hook,
     bytes memory _data
   ) external {
     _withdrawTokenInternal(msg.sender, _acceptor, _tokenAddr, address(0), 0, _hook, _data);
@@ -207,13 +203,13 @@ contract Umbra is Ownable {
       _tokenAddr,
       _sponsor,
       _sponsorFee,
-      IUmbraHookReceiver(0),
+      ISPaymentHookReceiver(0),
       "",
       _v,
       _r,
       _s
     );
-    _withdrawTokenInternal(_stealthAddr, _acceptor, _tokenAddr, _sponsor, _sponsorFee, IUmbraHookReceiver(0), "");
+    _withdrawTokenInternal(_stealthAddr, _acceptor, _tokenAddr, _sponsor, _sponsorFee, ISPaymentHookReceiver(0), "");
   }
 
   /**
@@ -235,7 +231,7 @@ contract Umbra is Ownable {
     address _tokenAddr,
     address _sponsor,
     uint256 _sponsorFee,
-    IUmbraHookReceiver _hook,
+    ISPaymentHookReceiver _hook,
     bytes memory _data,
     uint8 _v,
     bytes32 _r,
@@ -261,13 +257,13 @@ contract Umbra is Ownable {
     address _tokenAddr,
     address _sponsor,
     uint256 _sponsorFee,
-    IUmbraHookReceiver _hook,
+    ISPaymentHookReceiver _hook,
     bytes memory _data
   ) internal {
     uint256 _amount = tokenPayments[_stealthAddr][_tokenAddr];
 
     // also protects from underflow
-    require(_amount > _sponsorFee, "Umbra: No balance to withdraw or fee exceeds balance");
+    require(_amount > _sponsorFee, "SPayment: No balance to withdraw or fee exceeds balance");
 
     uint256 _withdrawalAmount = _amount - _sponsorFee;
     delete tokenPayments[_stealthAddr][_tokenAddr];
@@ -303,7 +299,7 @@ contract Umbra is Ownable {
     address _tokenAddr,
     address _sponsor,
     uint256 _sponsorFee,
-    IUmbraHookReceiver _hook,
+    ISPaymentHookReceiver _hook,
     bytes memory _data,
     uint8 _v,
     bytes32 _r,
@@ -324,6 +320,6 @@ contract Umbra is Ownable {
     );
 
     address _recoveredAddress = ecrecover(_digest, _v, _r, _s);
-    require(_recoveredAddress != address(0) && _recoveredAddress == _stealthAddr, "Umbra: Invalid Signature");
+    require(_recoveredAddress != address(0) && _recoveredAddress == _stealthAddr, "SPayment: Invalid Signature");
   }
 }

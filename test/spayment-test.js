@@ -4,11 +4,11 @@ const { expect } = require('chai');
 const { argumentBytes } = require('./sample-data');
 const { sumTokenAmounts, signMetaWithdrawal } = require('./utils');
 
-const Umbra = artifacts.require('Umbra');
+const SPayment = artifacts.require('SPayment');
 const TestToken = artifacts.require('TestToken');
 const { toWei, BN } = web3.utils; // eslint-disable-line @typescript-eslint/unbound-method
 
-describe('Umbra', () => {
+describe('SPayment', () => {
   const ctx = {};
   let owner, tollCollector, tollReceiver, payer1, receiver1, payer2, receiver2, acceptor, other, relayer;
 
@@ -55,30 +55,30 @@ describe('Umbra', () => {
       relayer,
     ] = await web3.eth.getAccounts();
     ctx.chainId = await web3.eth.getChainId();
-    ctx.umbra = await Umbra.new(deployedToll, tollCollector, tollReceiver, { from: owner });
+    ctx.spayment = await SPayment.new(deployedToll, tollCollector, tollReceiver, { from: owner });
     ctx.token = await TestToken.new('TestToken', 'TT');
 
     await ctx.token.mint(payer2, mintTokenAmount);
   });
 
-  it('should see the deployed Umbra contract', () => {
-    expect(ctx.umbra.address.startsWith('0x')).to.be.true;
-    expect(ctx.umbra.address.length).to.equal(42);
+  it('should see the deployed SPayment contract', () => {
+    expect(ctx.spayment.address.startsWith('0x')).to.be.true;
+    expect(ctx.spayment.address.length).to.equal(42);
     expect(ctx.token.address.startsWith('0x')).to.be.true;
     expect(ctx.token.address.length).to.equal(42);
   });
 
   it('should have correct values initialized', async () => {
-    const theOwner = await ctx.umbra.owner();
+    const theOwner = await ctx.spayment.owner();
     expect(theOwner).to.equal(owner);
 
-    const theCollector = await ctx.umbra.tollCollector();
+    const theCollector = await ctx.spayment.tollCollector();
     expect(theCollector).to.equal(tollCollector);
 
-    const theReceiver = await ctx.umbra.tollReceiver();
+    const theReceiver = await ctx.spayment.tollReceiver();
     expect(theReceiver).to.equal(tollReceiver);
 
-    const toll = await ctx.umbra.toll();
+    const toll = await ctx.spayment.toll();
     expect(toll.toString()).to.equal(deployedToll);
 
     const tokenBalance = await ctx.token.balanceOf(payer2);
@@ -86,53 +86,53 @@ describe('Umbra', () => {
   });
 
   it('should let the owner update the toll', async () => {
-    await ctx.umbra.setToll(updatedToll, { from: owner });
-    const toll = await ctx.umbra.toll();
+    await ctx.spayment.setToll(updatedToll, { from: owner });
+    const toll = await ctx.spayment.toll();
 
     expect(toll.toString()).to.equal(updatedToll);
   });
 
   it('should not allow someone other than the owner to update the toll', async () => {
-    await expectRevert(ctx.umbra.setToll(deployedToll, { from: other }), 'Ownable: caller is not the owner');
+    await expectRevert(ctx.spayment.setToll(deployedToll, { from: other }), 'Ownable: caller is not the owner');
   });
 
   it('should not allow someone to pay less than the toll amount', async () => {
-    const toll = await ctx.umbra.toll();
+    const toll = await ctx.spayment.toll();
     const paymentAmount = toll.sub(new BN('1'));
 
     await expectRevert(
-      ctx.umbra.sendEth(receiver1, toll, ...argumentBytes, { from: payer1, value: paymentAmount }),
-      'Umbra: Must pay more than the toll'
+      ctx.spayment.sendEth(receiver1, toll, ...argumentBytes, { from: payer1, value: paymentAmount }),
+      'SPayment: Must pay more than the toll'
     );
   });
 
   it('should not allow someone to pay exactly the toll amount', async () => {
-    const toll = await ctx.umbra.toll();
+    const toll = await ctx.spayment.toll();
 
     await expectRevert(
-      ctx.umbra.sendEth(receiver1, toll, ...argumentBytes, { from: payer1, value: toll }),
-      'Umbra: Must pay more than the toll'
+      ctx.spayment.sendEth(receiver1, toll, ...argumentBytes, { from: payer1, value: toll }),
+      'SPayment: Must pay more than the toll'
     );
   });
 
   it('should not allow an eth payment that commits to the wrong toll', async () => {
     await expectRevert(
-      ctx.umbra.sendEth(receiver1, deployedToll, ...argumentBytes, {
+      ctx.spayment.sendEth(receiver1, deployedToll, ...argumentBytes, {
         from: payer1,
         value: ethPayment,
       }),
-      'Umbra: Invalid or outdated toll commitment'
+      'SPayment: Invalid or outdated toll commitment'
     );
   });
 
   it('should allow someone to pay in eth', async () => {
     const receiverInitBalance = new BN(await web3.eth.getBalance(receiver1));
 
-    const toll = await ctx.umbra.toll();
+    const toll = await ctx.spayment.toll();
     const payment = new BN(ethPayment);
     const actualPayment = payment.sub(toll);
 
-    const receipt = await ctx.umbra.sendEth(receiver1, toll, ...argumentBytes, {
+    const receipt = await ctx.spayment.sendEth(receiver1, toll, ...argumentBytes, {
       from: payer1,
       value: ethPayment,
     });
@@ -154,11 +154,11 @@ describe('Umbra', () => {
   it('should allow someone to send to the ETH receiver twice', async () => {
     const receiverInitBalance = new BN(await web3.eth.getBalance(receiver1));
 
-    const toll = await ctx.umbra.toll();
+    const toll = await ctx.spayment.toll();
     const payment = new BN(secondEthPayment);
     const actualPayment = payment.sub(toll);
 
-    const receipt = await ctx.umbra.sendEth(receiver1, toll, ...argumentBytes, {
+    const receipt = await ctx.spayment.sendEth(receiver1, toll, ...argumentBytes, {
       from: payer1,
       value: secondEthPayment,
     });
@@ -179,55 +179,55 @@ describe('Umbra', () => {
 
   it('should not let the eth receiver withdraw tokens', async () => {
     await expectRevert(
-      ctx.umbra.withdrawToken(acceptor, ctx.token.address, { from: receiver1 }),
-      'Umbra: No balance to withdraw or fee exceeds balance'
+      ctx.spayment.withdrawToken(acceptor, ctx.token.address, { from: receiver1 }),
+      'SPayment: No balance to withdraw or fee exceeds balance'
     );
   });
 
   it('should not allow someone to pay with a token without sending the toll', async () => {
     await expectRevert(
-      ctx.umbra.sendToken(receiver2, ctx.token.address, tokenAmount, ...argumentBytes, {
+      ctx.spayment.sendToken(receiver2, ctx.token.address, tokenAmount, ...argumentBytes, {
         from: payer2,
       }),
-      'Umbra: Must pay the exact toll'
+      'SPayment: Must pay the exact toll'
     );
   });
 
   it('should not allow someone to pay with a token without sending the full toll', async () => {
-    const toll = await ctx.umbra.toll();
+    const toll = await ctx.spayment.toll();
     const lessToll = toll.sub(new BN('1'));
 
     await expectRevert(
-      ctx.umbra.sendToken(receiver2, ctx.token.address, tokenAmount, ...argumentBytes, {
+      ctx.spayment.sendToken(receiver2, ctx.token.address, tokenAmount, ...argumentBytes, {
         from: payer2,
         value: lessToll,
       }),
-      'Umbra: Must pay the exact toll'
+      'SPayment: Must pay the exact toll'
     );
   });
 
   it('should not allow someone to pay with a token sending more than the toll', async () => {
-    const toll = await ctx.umbra.toll();
+    const toll = await ctx.spayment.toll();
     const moreToll = toll.add(new BN('1'));
 
     await expectRevert(
-      ctx.umbra.sendToken(receiver2, ctx.token.address, tokenAmount, ...argumentBytes, {
+      ctx.spayment.sendToken(receiver2, ctx.token.address, tokenAmount, ...argumentBytes, {
         from: payer2,
         value: moreToll,
       }),
-      'Umbra: Must pay the exact toll'
+      'SPayment: Must pay the exact toll'
     );
   });
 
   it('should allow someone to pay with a token', async () => {
-    const toll = await ctx.umbra.toll();
-    await ctx.token.approve(ctx.umbra.address, tokenAmount, { from: payer2 });
-    const receipt = await ctx.umbra.sendToken(receiver2, ctx.token.address, tokenAmount, ...argumentBytes, {
+    const toll = await ctx.spayment.toll();
+    await ctx.token.approve(ctx.spayment.address, tokenAmount, { from: payer2 });
+    const receipt = await ctx.spayment.sendToken(receiver2, ctx.token.address, tokenAmount, ...argumentBytes, {
       from: payer2,
       value: toll,
     });
 
-    const contractBalance = await ctx.token.balanceOf(ctx.umbra.address);
+    const contractBalance = await ctx.token.balanceOf(ctx.spayment.address);
 
     expect(contractBalance.toString()).to.equal(tokenAmount);
 
@@ -241,14 +241,14 @@ describe('Umbra', () => {
   });
 
   it('should allow someone to pay tokens to a previous ETH receiver', async () => {
-    const toll = await ctx.umbra.toll();
-    await ctx.token.approve(ctx.umbra.address, secondTokenAmount, { from: payer2 });
-    const receipt = await ctx.umbra.sendToken(receiver1, ctx.token.address, secondTokenAmount, ...argumentBytes, {
+    const toll = await ctx.spayment.toll();
+    await ctx.token.approve(ctx.spayment.address, secondTokenAmount, { from: payer2 });
+    const receipt = await ctx.spayment.sendToken(receiver1, ctx.token.address, secondTokenAmount, ...argumentBytes, {
       from: payer2,
       value: toll,
     });
 
-    const contractBalance = await ctx.token.balanceOf(ctx.umbra.address);
+    const contractBalance = await ctx.token.balanceOf(ctx.spayment.address);
 
     expect(contractBalance.toString()).to.equal(totalTokenAmount);
 
@@ -262,26 +262,26 @@ describe('Umbra', () => {
   });
 
   it('should not allow someone to pay a token to a reused address', async () => {
-    const toll = await ctx.umbra.toll();
-    await ctx.token.approve(ctx.umbra.address, tokenAmount, { from: payer2 });
+    const toll = await ctx.spayment.toll();
+    await ctx.token.approve(ctx.spayment.address, tokenAmount, { from: payer2 });
 
     await expectRevert(
-      ctx.umbra.sendToken(receiver2, ctx.token.address, tokenAmount, ...argumentBytes, {
+      ctx.spayment.sendToken(receiver2, ctx.token.address, tokenAmount, ...argumentBytes, {
         from: payer2,
         value: toll,
       }),
-      'Umbra: Cannot send more tokens to stealth address'
+      'SPayment: Cannot send more tokens to stealth address'
     );
   });
 
   it('should allow someone to send ETH to a previous Token receiver', async () => {
     const receiverInitBalance = new BN(await web3.eth.getBalance(receiver2));
 
-    const toll = await ctx.umbra.toll();
+    const toll = await ctx.spayment.toll();
     const payment = new BN(secondEthPayment);
     const actualPayment = payment.sub(toll);
 
-    const receipt = await ctx.umbra.sendEth(receiver2, toll, ...argumentBytes, {
+    const receipt = await ctx.spayment.sendEth(receiver2, toll, ...argumentBytes, {
       from: payer1,
       value: secondEthPayment,
     });
@@ -302,13 +302,13 @@ describe('Umbra', () => {
 
   it('should not allow a non-receiver to withdraw tokens', async () => {
     await expectRevert(
-      ctx.umbra.withdrawToken(acceptor, ctx.token.address, { from: other }),
-      'Umbra: No balance to withdraw or fee exceeds balance'
+      ctx.spayment.withdrawToken(acceptor, ctx.token.address, { from: other }),
+      'SPayment: No balance to withdraw or fee exceeds balance'
     );
   });
 
   it('should allow receiver to withdraw their token', async () => {
-    const receipt = await ctx.umbra.withdrawToken(acceptor, ctx.token.address, { from: receiver2 });
+    const receipt = await ctx.spayment.withdrawToken(acceptor, ctx.token.address, { from: receiver2 });
 
     const acceptorBalance = await ctx.token.balanceOf(acceptor);
 
@@ -324,21 +324,21 @@ describe('Umbra', () => {
 
   it('should not allow a receiver to withdraw their tokens twice', async () => {
     await expectRevert(
-      ctx.umbra.withdrawToken(acceptor, ctx.token.address, { from: receiver2 }),
-      'Umbra: No balance to withdraw or fee exceeds balance'
+      ctx.spayment.withdrawToken(acceptor, ctx.token.address, { from: receiver2 }),
+      'SPayment: No balance to withdraw or fee exceeds balance'
     );
   });
 
   it('should allow someone to pay a token to a reused address after withdraw', async () => {
-    const toll = await ctx.umbra.toll();
-    await ctx.token.approve(ctx.umbra.address, tokenAmount, { from: payer2 });
+    const toll = await ctx.spayment.toll();
+    await ctx.token.approve(ctx.spayment.address, tokenAmount, { from: payer2 });
 
-    const receipt = await ctx.umbra.sendToken(receiver2, ctx.token.address, tokenAmount, ...argumentBytes, {
+    const receipt = await ctx.spayment.sendToken(receiver2, ctx.token.address, tokenAmount, ...argumentBytes, {
       from: payer2,
       value: toll,
     });
 
-    const contractBalance = await ctx.token.balanceOf(ctx.umbra.address);
+    const contractBalance = await ctx.token.balanceOf(ctx.spayment.address);
 
     expect(contractBalance.toString()).to.equal(totalTokenAmount);
 
@@ -355,7 +355,7 @@ describe('Umbra', () => {
     const { v, r, s } = await signMetaWithdrawal(
       metaWallet,
       ctx.chainId,
-      ctx.umbra.address,
+      ctx.spayment.address,
       metaAcceptor,
       ctx.token.address,
       relayer,
@@ -363,7 +363,7 @@ describe('Umbra', () => {
     );
 
     await expectRevert(
-      ctx.umbra.withdrawTokenOnBehalf(
+      ctx.spayment.withdrawTokenOnBehalf(
         metaWallet.address,
         metaAcceptor,
         ctx.token.address,
@@ -376,15 +376,15 @@ describe('Umbra', () => {
           from: relayer,
         }
       ),
-      'Umbra: No balance to withdraw or fee exceeds balance'
+      'SPayment: No balance to withdraw or fee exceeds balance'
     );
   });
 
   it('should revert on meta withdrawal signed by the wrong address', async () => {
     // Send the payment
-    const toll = await ctx.umbra.toll();
-    await ctx.token.approve(ctx.umbra.address, metaTokenTotal, { from: payer2 });
-    await ctx.umbra.sendToken(metaWallet.address, ctx.token.address, metaTokenTotal, ...argumentBytes, {
+    const toll = await ctx.spayment.toll();
+    await ctx.token.approve(ctx.spayment.address, metaTokenTotal, { from: payer2 });
+    await ctx.spayment.sendToken(metaWallet.address, ctx.token.address, metaTokenTotal, ...argumentBytes, {
       from: payer2,
       value: toll,
     });
@@ -393,7 +393,7 @@ describe('Umbra', () => {
     const { v, r, s } = await signMetaWithdrawal(
       wrongWallet,
       ctx.chainId,
-      ctx.umbra.address,
+      ctx.spayment.address,
       metaAcceptor,
       ctx.token.address,
       relayer,
@@ -401,7 +401,7 @@ describe('Umbra', () => {
     );
 
     await expectRevert(
-      ctx.umbra.withdrawTokenOnBehalf(
+      ctx.spayment.withdrawTokenOnBehalf(
         metaWallet.address,
         metaAcceptor,
         ctx.token.address,
@@ -414,7 +414,7 @@ describe('Umbra', () => {
           from: relayer,
         }
       ),
-      'Umbra: Invalid Signature'
+      'SPayment: Invalid Signature'
     );
   });
 
@@ -424,7 +424,7 @@ describe('Umbra', () => {
     const { v, r, s } = await signMetaWithdrawal(
       metaWallet,
       ctx.chainId,
-      ctx.umbra.address,
+      ctx.spayment.address,
       metaAcceptor,
       ctx.token.address,
       relayer,
@@ -432,10 +432,10 @@ describe('Umbra', () => {
     );
 
     await expectRevert(
-      ctx.umbra.withdrawTokenOnBehalf(metaWallet.address, metaAcceptor, ctx.token.address, relayer, bigFee, v, r, s, {
+      ctx.spayment.withdrawTokenOnBehalf(metaWallet.address, metaAcceptor, ctx.token.address, relayer, bigFee, v, r, s, {
         from: relayer,
       }),
-      'Umbra: No balance to withdraw or fee exceeds balance'
+      'SPayment: No balance to withdraw or fee exceeds balance'
     );
   });
 
@@ -443,14 +443,14 @@ describe('Umbra', () => {
     const { v, r, s } = await signMetaWithdrawal(
       metaWallet,
       ctx.chainId,
-      ctx.umbra.address,
+      ctx.spayment.address,
       metaAcceptor,
       ctx.token.address,
       relayer,
       relayerTokenFee
     );
 
-    const receipt = await ctx.umbra.withdrawTokenOnBehalf(
+    const receipt = await ctx.spayment.withdrawTokenOnBehalf(
       metaWallet.address,
       metaAcceptor,
       ctx.token.address,
@@ -472,15 +472,15 @@ describe('Umbra', () => {
   });
 
   it('should not allow someone else to move tolls to toll receiver', async () => {
-    await expectRevert(ctx.umbra.collectTolls({ from: other }), 'Umbra: Not toll collector');
+    await expectRevert(ctx.spayment.collectTolls({ from: other }), 'SPayment: Not toll collector');
   });
 
   it('should allow the toll collector to move tolls to toll receiver', async () => {
-    const toll = await ctx.umbra.toll();
+    const toll = await ctx.spayment.toll();
     const expectedCollection = toll.mul(new BN('7'));
     const receiverInitBalance = new BN(await web3.eth.getBalance(tollReceiver));
 
-    await ctx.umbra.collectTolls({ from: tollCollector });
+    await ctx.spayment.collectTolls({ from: tollCollector });
 
     const receiverPostBalance = new BN(await web3.eth.getBalance(tollReceiver));
     const tollsReceived = receiverPostBalance.sub(receiverInitBalance);

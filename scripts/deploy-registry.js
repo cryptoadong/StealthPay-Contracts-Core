@@ -1,5 +1,5 @@
 /**
- * @notice Umbra Registry Deployment script
+ * @notice SPayment Registry Deployment script
  * @dev At each contract deployment or transaction, we wait for the transaction to be mined before
  * continuing to the next step. This is done because it makes it simpler to continue from that spot
  * rather than restart the full deployment
@@ -83,7 +83,7 @@ const save = (value, field, subfield = undefined) => {
       throw new Error(`Unexpected deployer nonce. Found ${deployerNonce}, expected ${expectedNonce}.`);
     }
 
-    // deploy the Umbra contracts
+    // deploy the SPayment contracts
     const StealthKeyRegistry = await ethers.getContractFactory('StealthKeyRegistry', deployerWallet);
     const registry = await StealthKeyRegistry.deploy();
     const deployed=await registry.deployed();

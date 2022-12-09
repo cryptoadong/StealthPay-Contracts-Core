@@ -1,6 +1,6 @@
 /**
- * @notice Umbra Deployment script
- * Deploys the core Umbra contract, along with the Umbra Stealth Key Registry, checkilng for the correct
+ * @notice SPayment Deployment script
+ * Deploys the core SPayment contract, along with the SPayment Stealth Key Registry, checkilng for the correct
  * nonces at each step to ensure we get the same contract addresses across networks.
  * @dev To initialize a deploy:
  *   `yarn deploy --network <network>`   (where network specifies a network found in the hardhat.config.ts file)
@@ -82,21 +82,21 @@ const doBumpNonceTx = async (wallet) => {
 
 
     if (deployerNonce !== 0) {
-      throw new Error('Unexpected non-zero nonce before deploying Umbra');
+      throw new Error('Unexpected non-zero nonce before deploying SPayment');
     }
 
 
-    // deploy the Umbra contract
-    const Umbra = await ethers.getContractFactory('Umbra', deployerWallet);
+    // deploy the SPayment contract
+    const SPayment = await ethers.getContractFactory('SPayment', deployerWallet);
     
-    const umbra = await Umbra.deploy(toll, tollCollector, tollReceiver);
-    const deployed=await umbra.deployed();
+    const spayment = await SPayment.deploy(toll, tollCollector, tollReceiver);
+    const deployed=await spayment.deployed();
 
     console.log('deployed: ', deployed);
 
 
-    save(umbra.address, 'contracts', 'Umbra');
-    console.log('Umbra contract deployed to address: ', umbra.address);
+    save(spayment.address, 'contracts', 'SPayment');
+    console.log('SPayment contract deployed to address: ', spayment.address);
 
     // bump the nonce until the level needed for the registry
     deployerNonce = await deployerWallet.getTransactionCount();

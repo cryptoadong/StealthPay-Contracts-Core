@@ -2,10 +2,10 @@
 
 pragma solidity ^0.7.6;
 
-/// @dev Interface that post-withdraw hooks must implement to interop with Umbra
-interface IUmbraHookReceiver {
+/// @dev Interface that post-withdraw hooks must implement to interop with SPayment
+interface ISPaymentHookReceiver {
   /**
-   * @notice Method called after a user completes an Umbra token withdrawal
+   * @notice Method called after a user completes an SPayment token withdrawal
    * @param _amount The amount of the token withdrawn _after_ subtracting the sponsor fee
    * @param _stealthAddr The stealth address whose token balance was withdrawn
    * @param _acceptor Address where withdrawn funds were sent; can be this contract

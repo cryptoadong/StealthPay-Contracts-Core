@@ -22,7 +22,7 @@ const sumTokenAmounts = (amounts) => {
  * Sign a transaction for a metawithdrawal
  * @param {object} signer Ethers Wallet or other Signer type
  * @param {number|string} chainId Chain identifier where contract is deployed
- * @param {string} contract Umbra contract address
+ * @param {string} contract SPayment contract address
  * @param {string} acceptor Withdrawal destination
  * @param {string} token Address of token being withdrawn
  * @param {string} sponsor Address of relayer

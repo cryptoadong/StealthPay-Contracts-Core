@@ -2,10 +2,10 @@
 
 pragma solidity ^0.7.6;
 
-import "./IUmbraHookReceiver.sol";
+import "./ISPaymentHookReceiver.sol";
 
-/// @dev Mock implementation of UmbraHookable used for testing
-contract MockHook is IUmbraHookReceiver {
+/// @dev Mock implementation of SPaymentHookable used for testing
+contract MockHook is ISPaymentHookReceiver {
   struct CallHookData {
     uint256 amount;
     address stealthAddr;

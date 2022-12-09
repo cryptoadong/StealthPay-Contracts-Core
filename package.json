@@ -1,7 +1,7 @@
 {
-  "name": "@spayment/contracts-core",
+  "name": "@cryptoadong/spayment-contracts-core",
   "version": "0.0.2",
-  "description": "Contracts for the Umbra Protocol",
+  "description": "Contracts for the SPayment Protocol",
   "dependencies": {
     "@openzeppelin/contracts": "^3.4.1"
   },
@@ -27,8 +27,6 @@
     "concurrently": "^5.3.0",
     "cz-conventional-changelog": "^3.3.0",
     "dotenv": "^8.2.0",
-    "eslint": "^7.11.0",
-    "eslint-config-prettier": "^6.12.0",
     "ethereum-waffle": "^3.2.0",
     "ethers": "^5.7.2",
     "fs-extra": "^9.0.1",
@@ -37,17 +35,14 @@
     "hardhat-typechain": "^0.3.3",
     "husky": "^4.3.0",
     "mocha": "^8.1.3",
-    "prettier": "^2.1.2",
-    "prettier-plugin-solidity": "^1.0.0-beta.1",
     "shelljs": "^0.8.4",
     "solc": "0.7.4",
-    "solhint": "^3.2.1",
-    "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.7.12",
     "ts-generator": "^0.1.1",
     "ts-node": "^8.10.2",
     "typechain": "^3.0.0",
-    "typescript": "^3.9.7"
+    "rimraf": "^3.0.2",
+    "typescript": "^4.1.0"
   },
   "files": [
     "typechain",
@@ -61,25 +56,27 @@
     "smart-contracts",
     "solidity"
   ],
-  "author": "",
+  "author": "Crypto Adong <cryptoadong@gmail.com>",
   "license": "MIT",
   "scripts": {
     "clean": "hardhat clean",
     "build": "hardhat compile",
-    "lint": "yarn run lint:sol && yarn run lint:ts && yarn run prettier:list-different",
-    "lint:sol": "solhint --config ./.solhint.json --max-warnings 9 \"contracts/**/*.sol\"",
-    "lint:ts": "eslint --ext .js,.ts .",
-    "prettier": "prettier --write \"**/*.{js,json,md,sol,ts}\"",
-    "prettier:list-different": "prettier --list-different \"**/*.{js,json,md,sol,ts}\"",
     "test": "hardhat test",
-    "test:gas": "REPORT_GAS=true yarn test",
     "typechain": "hardhat typechain",
     "prepare": "yarn run typechain",
     "deploy": "SET NODE_OPTIONS=--openssl-legacy-provider && yarn build && hardhat run scripts/deploy.js",
-    "deploy:registry": "SET NODE_OPTIONS=--openssl-legacy-provider && yarn build && hardhat run scripts/deploy-registry.js",
-    "precommit": "lint-staged"
+    "deploy:registry": "SET NODE_OPTIONS=--openssl-legacy-provider && yarn build && hardhat run scripts/deploy-registry.js"
   },
-  "volta": {
-    "extends": "../package.json"
-  }
+  "main": ".eslintrc.js",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cryptoadong/spayment-contracts-core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cryptoadong/spayment-contracts-core/issues"
+  },
+  "homepage": "https://github.com/cryptoadong/spayment-contracts-core#readme"
 }

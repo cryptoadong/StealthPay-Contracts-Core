@@ -145,7 +145,7 @@ describe('StealthKeyRegistry', () => {
       const { chainId } = await ethers.provider.getNetwork();
 
       const domain = {
-        name: 'Umbra Stealth Key Registry',
+        name: 'SPayment Stealth Key Registry',
         version: '1',
         chainId,
         verifyingContract: registry.address,

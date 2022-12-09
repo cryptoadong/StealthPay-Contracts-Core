@@ -1,22 +1,22 @@
 {
   "localhost": {
-    "expectedDeployer": "0x7f4bBD9AaD71AfB0B31f44ACe5ADfEb8A7970A16",
+    "expectedDeployer": "0x3BEB40e16eE20E10329f9C1021eD53471423bDFC",
     "expectedNonce": 0
   },
   "rinkeby": {
-    "expectedDeployer": "0x7f4bBD9AaD71AfB0B31f44ACe5ADfEb8A7970A16",
+    "expectedDeployer": "0x3BEB40e16eE20E10329f9C1021eD53471423bDFC",
     "expectedNonce": 5
   },
   "mainnet": {
-    "expectedDeployer": "0x7f4bBD9AaD71AfB0B31f44ACe5ADfEb8A7970A16",
+    "expectedDeployer": "0x3BEB40e16eE20E10329f9C1021eD53471423bDFC",
     "expectedNonce": 5
   },
   "goerli": {
-    "expectedDeployer": "0x7f4bBD9AaD71AfB0B31f44ACe5ADfEb8A7970A16",
+    "expectedDeployer": "0x3BEB40e16eE20E10329f9C1021eD53471423bDFC",
     "expectedNonce": 5
   },
   "polygon": {
-    "expectedDeployer": "0x7f4bBD9AaD71AfB0B31f44ACe5ADfEb8A7970A16",
+    "expectedDeployer": "0x3BEB40e16eE20E10329f9C1021eD53471423bDFC",
     "expectedNonce": 5
   }
 }

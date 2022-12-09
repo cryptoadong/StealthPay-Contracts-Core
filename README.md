@@ -1,6 +1,6 @@
-# Umbra contracts
+# SPayment contracts
 
-On chain components of the [Umbra protocol](../README.md).
+On chain components of the [SPayment protocol](../README.md).
 
 ## Development
 
@@ -40,22 +40,6 @@ Compile the smart contracts and generate TypeChain artifacts:
 $ yarn build
 ```
 
-### Lint Solidity
-
-Lint the Solidity code:
-
-```sh
-$ yarn lint:sol
-```
-
-### Lint TypeScript
-
-Lint the TypeScript code:
-
-```sh
-$ yarn lint:ts
-```
-
 ### Test
 
 Run the Mocha tests:
@@ -64,13 +48,6 @@ Run the Mocha tests:
 $ yarn test
 ```
 
-### Coverage
-
-Generate the code coverage report:
-
-```sh
-$ yarn coverage
-```
 
 ### Clean
 
@@ -85,4 +62,18 @@ $ yarn clean
 $ yarn deploy
 $ yarn deploy:registry
 ```
+Verify contact
+1.reading artfacts->build-info/*.json-->input:{XXXX} 
+2.save->xxxx.json
+3.etherscan.io->upload JSON
+
+## Quest
+node.js v18 for windows
+"deploy": "SET NODE_OPTIONS=--openssl-legacy-provider && yarn build && hardhat run scripts/deploy.js",
+"deploy:registry": "SET NODE_OPTIONS=--openssl-legacy-provider && yarn build && hardhat run scripts/deploy-registry.js"
+
+node.js v18 for Linux
+"deploy": "export NODE_OPTIONS=--openssl-legacy-provider && yarn build && hardhat run scripts/deploy.js",
+"deploy:registry": "export NODE_OPTIONS=--openssl-legacy-provider && yarn build && hardhat run scripts/deploy-registry.js"
+
 

@@ -4,13 +4,13 @@ const { expect } = require('chai');
 const { argumentBytes } = require('./sample-data');
 const { signMetaWithdrawal } = require('./utils');
 
-const Umbra = artifacts.require('Umbra');
+const SPayment = artifacts.require('SPayment');
 const TestToken = artifacts.require('TestToken');
 const MockHook = artifacts.require('MockHook');
 const { toWei, fromWei } = web3.utils; // eslint-disable-line @typescript-eslint/unbound-method
 const AddressZero = ethers.constants.AddressZero;
 
-describe('Umbra Hooks', () => {
+describe('SPayment Hooks', () => {
   const ctx = {};
   let owner, sender, receiver, acceptor, relayer;
 
@@ -30,12 +30,12 @@ describe('Umbra Hooks', () => {
 
   // helper function to send test tokens to stealth address
   const sendToken = async (fromAddr, stealthAddr, amount) => {
-    const toll = await ctx.umbra.toll();
+    const toll = await ctx.spayment.toll();
     const weiAmount = toWei(amount);
 
-    await ctx.token.approve(ctx.umbra.address, weiAmount, { from: fromAddr });
+    await ctx.token.approve(ctx.spayment.address, weiAmount, { from: fromAddr });
 
-    await ctx.umbra.sendToken(stealthAddr, ctx.token.address, weiAmount, ...argumentBytes, {
+    await ctx.spayment.sendToken(stealthAddr, ctx.token.address, weiAmount, ...argumentBytes, {
       from: fromAddr,
       value: toll,
     });
@@ -53,14 +53,14 @@ describe('Umbra Hooks', () => {
   });
 
   beforeEach(async () => {
-    ctx.umbra = await Umbra.new(toll, owner, owner, { from: owner });
+    ctx.spayment = await SPayment.new(toll, owner, owner, { from: owner });
     ctx.token = await TestToken.new('TestToken', 'TT');
     ctx.hook = await MockHook.new();
   });
 
-  it('should see the deployed Umbra contract', () => {
-    expect(ctx.umbra.address.startsWith('0x')).to.be.true;
-    expect(ctx.umbra.address.length).to.equal(42);
+  it('should see the deployed SPayment contract', () => {
+    expect(ctx.spayment.address.startsWith('0x')).to.be.true;
+    expect(ctx.spayment.address.length).to.equal(42);
     expect(ctx.token.address.startsWith('0x')).to.be.true;
     expect(ctx.token.address.length).to.equal(42);
     expect(ctx.hook.address.startsWith('0x')).to.be.true;
@@ -71,7 +71,7 @@ describe('Umbra Hooks', () => {
     it('should call the hook contract when the stealth receiver withdraws directly', async () => {
       await mintAndSendToken(sender, receiver, '100');
 
-      await ctx.umbra.withdrawTokenAndCall(acceptor, ctx.token.address, ctx.hook.address, '0xbeefc0ffee', {
+      await ctx.spayment.withdrawTokenAndCall(acceptor, ctx.token.address, ctx.hook.address, '0xbeefc0ffee', {
         from: receiver,
       });
 
@@ -92,7 +92,7 @@ describe('Umbra Hooks', () => {
     it('should call the hook contract when the stealth receiver withdraws directly with empty data', async () => {
       await mintAndSendToken(sender, receiver, '100');
 
-      await ctx.umbra.withdrawTokenAndCall(acceptor, ctx.token.address, ctx.hook.address, '0x', {
+      await ctx.spayment.withdrawTokenAndCall(acceptor, ctx.token.address, ctx.hook.address, '0x', {
         from: receiver,
       });
 
@@ -113,7 +113,7 @@ describe('Umbra Hooks', () => {
     it('should call the hook contract when the stealth receiver withdraws directly to the hook contract', async () => {
       await mintAndSendToken(sender, receiver, '100');
 
-      await ctx.umbra.withdrawTokenAndCall(ctx.hook.address, ctx.token.address, ctx.hook.address, '0xbeefc0ffee', {
+      await ctx.spayment.withdrawTokenAndCall(ctx.hook.address, ctx.token.address, ctx.hook.address, '0xbeefc0ffee', {
         from: receiver,
       });
 
@@ -134,7 +134,7 @@ describe('Umbra Hooks', () => {
     it('should not call the hook when the stealth receiver withdraws directly if the hook address is 0', async () => {
       await mintAndSendToken(sender, receiver, '100');
 
-      await ctx.umbra.withdrawTokenAndCall(acceptor, ctx.token.address, AddressZero, '0xbeefc0ffee', {
+      await ctx.spayment.withdrawTokenAndCall(acceptor, ctx.token.address, AddressZero, '0xbeefc0ffee', {
         from: receiver,
       });
 
@@ -162,7 +162,7 @@ describe('Umbra Hooks', () => {
       const { v, r, s } = await signMetaWithdrawal(
         metaWallet,
         ctx.chainId,
-        ctx.umbra.address,
+        ctx.spayment.address,
         acceptor,
         ctx.token.address,
         relayer,
@@ -171,7 +171,7 @@ describe('Umbra Hooks', () => {
         '0xbeefc0ffee'
       );
 
-      await ctx.umbra.withdrawTokenAndCallOnBehalf(
+      await ctx.spayment.withdrawTokenAndCallOnBehalf(
         metaWallet.address,
         acceptor,
         ctx.token.address,
@@ -208,7 +208,7 @@ describe('Umbra Hooks', () => {
       const { v, r, s } = await signMetaWithdrawal(
         metaWallet,
         ctx.chainId,
-        ctx.umbra.address,
+        ctx.spayment.address,
         acceptor,
         ctx.token.address,
         relayer,
@@ -217,7 +217,7 @@ describe('Umbra Hooks', () => {
         '0x'
       );
 
-      await ctx.umbra.withdrawTokenAndCallOnBehalf(
+      await ctx.spayment.withdrawTokenAndCallOnBehalf(
         metaWallet.address,
         acceptor,
         ctx.token.address,
@@ -254,7 +254,7 @@ describe('Umbra Hooks', () => {
       const { v, r, s } = await signMetaWithdrawal(
         metaWallet,
         ctx.chainId,
-        ctx.umbra.address,
+        ctx.spayment.address,
         acceptor,
         ctx.token.address,
         relayer,
@@ -263,7 +263,7 @@ describe('Umbra Hooks', () => {
         '0xbeefc0ffee'
       );
 
-      await ctx.umbra.withdrawTokenAndCallOnBehalf(
+      await ctx.spayment.withdrawTokenAndCallOnBehalf(
         metaWallet.address,
         acceptor,
         ctx.token.address,
@@ -301,7 +301,7 @@ describe('Umbra Hooks', () => {
       const { v, r, s } = await signMetaWithdrawal(
         metaWallet,
         ctx.chainId,
-        ctx.umbra.address,
+        ctx.spayment.address,
         ctx.hook.address,
         ctx.token.address,
         relayer,
@@ -310,7 +310,7 @@ describe('Umbra Hooks', () => {
         '0xbeefc0ffee'
       );
 
-      await ctx.umbra.withdrawTokenAndCallOnBehalf(
+      await ctx.spayment.withdrawTokenAndCallOnBehalf(
         metaWallet.address,
         ctx.hook.address,
         ctx.token.address,
@@ -349,7 +349,7 @@ describe('Umbra Hooks', () => {
       const { v, r, s } = await signMetaWithdrawal(
         metaWallet,
         ctx.chainId,
-        ctx.umbra.address,
+        ctx.spayment.address,
         acceptor,
         ctx.token.address,
         relayer,
@@ -359,7 +359,7 @@ describe('Umbra Hooks', () => {
       );
 
       await expectRevert(
-        ctx.umbra.withdrawTokenAndCallOnBehalf(
+        ctx.spayment.withdrawTokenAndCallOnBehalf(
           metaWallet.address,
           acceptor,
           ctx.token.address,
@@ -372,7 +372,7 @@ describe('Umbra Hooks', () => {
           s,
           { from: relayer }
         ),
-        'Umbra: Invalid Signature'
+        'SPayment: Invalid Signature'
       );
     });
 
@@ -382,7 +382,7 @@ describe('Umbra Hooks', () => {
       const { v, r, s } = await signMetaWithdrawal(
         metaWallet,
         ctx.chainId,
-        ctx.umbra.address,
+        ctx.spayment.address,
         acceptor,
         ctx.token.address,
         relayer,
@@ -392,7 +392,7 @@ describe('Umbra Hooks', () => {
       );
 
       await expectRevert(
-        ctx.umbra.withdrawTokenAndCallOnBehalf(
+        ctx.spayment.withdrawTokenAndCallOnBehalf(
           metaWallet.address,
           acceptor,
           ctx.token.address,
@@ -405,7 +405,7 @@ describe('Umbra Hooks', () => {
           s,
           { from: relayer }
         ),
-        'Umbra: Invalid Signature'
+        'SPayment: Invalid Signature'
       );
     });
   });
