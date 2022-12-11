@@ -1,0 +1,10 @@
+# folders
+artifacts/
+cache/
+node_modules/
+typechain/
+
+# files
+.solcover.js
+coverage.json
+.eslintrc.js

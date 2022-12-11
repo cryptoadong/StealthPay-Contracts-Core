@@ -1,0 +1,37 @@
+{
+  "goerli": {
+    "expectedDeployer": "0x6098ff31bC843810bAA2C2B3D62018FEd08d34F7",
+    "toll": "30000000000000",
+    "tollCollector": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "tollReceiver": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "expectedRegistryNonce": 3
+  },
+  "mainnet": {
+    "expectedDeployer": "0x6098ff31bC843810bAA2C2B3D62018FEd08d34F7",
+    "toll": "30000000000000",
+    "tollCollector": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "tollReceiver": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "expectedRegistryNonce": 3
+  },
+  "arbitrum": {
+    "expectedDeployer": "0x6098ff31bC843810bAA2C2B3D62018FEd08d34F7",
+    "toll": "30000000000000",
+    "tollCollector": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "tollReceiver": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "expectedRegistryNonce": 3
+  },
+  "polygon": {
+    "expectedDeployer": "0x6098ff31bC843810bAA2C2B3D62018FEd08d34F7",
+    "toll": "30000000000000",
+    "tollCollector": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "tollReceiver": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "expectedRegistryNonce": 3
+  },
+  "optimism": {
+    "expectedDeployer": "0x6098ff31bC843810bAA2C2B3D62018FEd08d34F7",
+    "toll": "30000000000000",
+    "tollCollector": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "tollReceiver": "0xd1205B4E1E5f7Ecb15AE9589fb292a302cd66B23",
+    "expectedRegistryNonce": 3
+  }
+}

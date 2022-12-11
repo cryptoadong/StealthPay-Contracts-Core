@@ -1,0 +1,22 @@
+{
+  "goerli": {
+    "expectedDeployer": "0x6098ff31bC843810bAA2C2B3D62018FEd08d34F7",
+    "expectedNonce": 3
+  },
+  "mainnet": {
+    "expectedDeployer": "0x6098ff31bC843810bAA2C2B3D62018FEd08d34F7",
+    "expectedNonce": 3
+  },
+  "optimism": {
+    "expectedDeployer": "0x6098ff31bC843810bAA2C2B3D62018FEd08d34F7",
+    "expectedNonce": 3
+  },
+  "arbitrum": {
+    "expectedDeployer": "0x6098ff31bC843810bAA2C2B3D62018FEd08d34F7",
+    "expectedNonce": 3
+  },
+  "polygon": {
+    "expectedDeployer": "0x6098ff31bC843810bAA2C2B3D62018FEd08d34F7",
+    "expectedNonce": 3
+  }
+}
